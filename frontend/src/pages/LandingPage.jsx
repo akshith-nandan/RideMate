@@ -143,11 +143,11 @@ const LandingPage = () => {
                     <span className="text-xs text-slate-400 font-semibold">Capacity: 3 seats</span>
                   </div>
                   <div className="flex items-center text-sm font-bold text-white space-x-2">
-                    <span>Tambaram</span>
+                    <span>Warangal</span>
                     <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
-                    <span className="text-brand-indigo">Guindy</span>
+                    <span className="text-brand-indigo">Gachibowli</span>
                     <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
-                    <span>T Nagar</span>
+                    <span>Hitech-city</span>
                   </div>
                 </div>
                 {/* Passenger */}
@@ -159,9 +159,9 @@ const LandingPage = () => {
                     </div>
                   </div>
                   <div className="flex items-center text-sm font-bold text-white space-x-2">
-                    <span className="text-emerald-400">Chromepet</span>
+                    <span className="text-emerald-400">Kokapet</span>
                     <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
-                    <span className="text-emerald-400">Guindy</span>
+                    <span className="text-emerald-400">Hitech-city</span>
                   </div>
                 </div>
               </div>
@@ -169,7 +169,7 @@ const LandingPage = () => {
               <div className="mt-6 bg-brand-yellow/5 border border-brand-yellow/20 rounded-xl p-4 flex items-start space-x-3">
                 <CheckCircle className="h-5 w-5 text-brand-yellow shrink-0 mt-0.5" />
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  <strong>Overlap Detected!</strong> The passenger's pickup (Chromepet) and dropoff (Guindy) are perfectly aligned on the driver's Tambaram $\rightarrow$ T Nagar commute, minimizing detours.
+                  <strong>Overlap Detected!</strong> The passenger's pickup (Kokapet) and dropoff (Hitech-city) are perfectly aligned on the driver's Warangal $\rightarrow$ Hitech-city commute, minimizing detours.
                 </p>
               </div>
             </div>

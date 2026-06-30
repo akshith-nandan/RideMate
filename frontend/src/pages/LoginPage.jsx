@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail, Navigation, AlertCircle } from 'lucide-react';
+import { Lock, Mail, Navigation, AlertCircle, Eye, EyeOff, LogIn } from 'lucide-react';
 const LoginPage = () => {
   const { login, user } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [remember, setRemember] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -101,15 +103,31 @@ const LoginPage = () => {
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all text-sm font-medium"
+                  className="block w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all text-sm font-medium"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute inset-y-0 right-2 flex items-center px-2 text-slate-400 hover:text-slate-200"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                </button>
               </div>
+            </div>
+            {/* Remember / Forgot row */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="inline-flex items-center text-slate-300">
+                <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="form-checkbox h-4 w-4 text-brand-yellow bg-slate-800 rounded" />
+                <span className="ml-2">Remember me</span>
+              </label>
+              <a href="/forgot-password" className="text-brand-yellow font-medium hover:underline">Forgot?</a>
             </div>
             {/* Submit Button */}
             <div>
