@@ -59,14 +59,14 @@ const seedData = async () => {
     const karthikCar = await Vehicle.create({
       owner: karthik._id,
       type: 'car',
-      number: 'TN 09 BK 8888',
+      number: 'TG 09 BK 8888',
       model: 'Honda Civic (Black)',
       capacity: 4
     });
     const selvamBike = await Vehicle.create({
       owner: selvam._id,
       type: 'bike',
-      number: 'TN 07 BY 9999',
+      number: 'TG 07 BY 9999',
       model: 'TVS Jupiter (Grey)',
       capacity: 1
     });
@@ -82,9 +82,9 @@ const seedData = async () => {
     const ride1 = await Ride.create({
       driver: karthik._id,
       vehicle: karthikCar._id,
-      startLocation: 'Tambaram',
-      destination: 'T Nagar',
-      routePoints: ['Tambaram', 'Chromepet', 'Guindy', 'T Nagar'],
+      startLocation: 'Warangal',
+      destination: 'Secunderabad',
+      routePoints: ['Warangal', 'Jangoan', 'Uppal', 'Secunderabad'],
       departureTime: tomorrow9am,
       costPerSeat: 150,
       availableSeats: 4,
@@ -94,9 +94,9 @@ const seedData = async () => {
     const ride2 = await Ride.create({
       driver: selvam._id,
       vehicle: selvamBike._id,
-      startLocation: 'Guindy',
-      destination: 'T Nagar',
-      routePoints: ['Guindy', 'Saidapet', 'T Nagar'],
+      startLocation: 'Warangal',
+      destination: 'Kazipet',
+      routePoints: ['Warangal', 'Hanamkonda', 'Kazipet'],
       departureTime: tomorrow9am,
       costPerSeat: 80,
       availableSeats: 1,
