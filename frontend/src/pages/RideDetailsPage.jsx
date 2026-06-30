@@ -6,16 +6,18 @@ import { useAuth } from '../context/AuthContext';
 import { Calendar, User, Star, MapPin, Navigation, ArrowRight, ShieldCheck, Compass, MessageSquare, Phone, CheckCircle, ChevronLeft } from 'lucide-react';
 // Local geocoder database to compute client-side previews in Details map
 const COORDINATES = {
-  'tambaram': { name: 'Tambaram', lat: 12.9249, lng: 80.0100 },
-  'chromepet': { name: 'Chromepet', lat: 12.9516, lng: 80.1462 },
-  'guindy': { name: 'Guindy', lat: 13.0067, lng: 80.2206 },
-  't nagar': { name: 'T Nagar', lat: 13.0418, lng: 80.2337 },
-  't. nagar': { name: 'T Nagar', lat: 13.0418, lng: 80.2337 },
-  'saidapet': { name: 'Saidapet', lat: 13.0200, lng: 80.2215 },
-  'adyar': { name: 'Adyar', lat: 13.0012, lng: 80.2565 },
-  'velachery': { name: 'Velachery', lat: 12.9796, lng: 80.2196 },
-  'central': { name: 'Chennai Central', lat: 13.0827, lng: 80.2707 },
-  'egmore': { name: 'Egmore', lat: 13.0784, lng: 80.2588 }
+  'hyderabad': { name: 'Hyderabad', lat: 17.3850, lng: 78.4867 },
+  'secunderabad': { name: 'Secunderabad', lat: 17.4399, lng: 78.4983 },
+  'gachibowli': { name: 'Gachibowli', lat: 17.4401, lng: 78.3489 },
+  'kukatpally': { name: 'Kukatpally', lat: 17.4845, lng: 78.4138 },
+  'jubilee hills': { name: 'Jubilee Hills', lat: 17.4290, lng: 78.4011 },
+  'mehdipatnam': { name: 'Mehdipatnam', lat: 17.3924, lng: 78.4378 },
+  'warangal': { name: 'Warangal', lat: 17.9689, lng: 79.5941 },
+  'khammam': { name: 'Khammam', lat: 17.2473, lng: 80.1514 },
+  'nizamabad': { name: 'Nizamabad', lat: 18.6725, lng: 78.0941 },
+  'adilabad': { name: 'Adilabad', lat: 19.6641, lng: 78.5320 },
+  'karimnagar': { name: 'Karimnagar', lat: 18.4386, lng: 79.1288 },
+  'sangareddy': { name: 'Sangareddy', lat: 17.6200, lng: 78.0833 }
 };
 const clientGeocode = (name) => {
   if (!name) return null;
