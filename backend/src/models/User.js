@@ -8,22 +8,21 @@ const UserSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
     unique: true,
     trim: true,
     lowercase: true,
+    sparse: true,
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
   },
   phone: {
     type: String,
-    required: [true, 'Phone number is required'],
-    trim: true
+    trim: true,
+    sparse: true
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
     minlength: 6,
-    select: false // Exclude from query results by default
+    select: false
   },
   profilePic: {
     type: String,
@@ -31,12 +30,30 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['passenger', 'driver'],
+    enum: ['passenger', 'driver', 'admin'],
     default: 'passenger'
   },
   rating: {
     type: Number,
     default: null
+  },
+  // OAuth
+  googleId: String,
+  googleEmail: String,
+  // Phone authentication
+  phoneVerified: {
+    type: Boolean,
+    default: false
+  },
+  phoneVerificationToken: String,
+  // Authentication method
+  authMethods: [{
+    type: String,
+    enum: ['email', 'phone', 'google']
+  }],
+  isActive: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true
