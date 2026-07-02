@@ -227,21 +227,31 @@ const sendOTP = async (req, res) => {
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save OTP to database
+    // Delete any existing OTP for this phone
+    await OTP.deleteMany({ phone });
+
+    // Save new OTP to database
     await OTP.create({
       phone,
       otp,
       attempts: 0
     });
 
-    // In production, send OTP via SMS using Twilio or similar
-    // For now, we'll log it (REMOVE IN PRODUCTION)
-    console.log(`OTP for ${phone}: ${otp}`);
+    // Send OTP via SMS (using mock/console for now)
+    // In production, replace this with Twilio or another SMS provider
+    try {
+      await sendSMSOTP(phone, otp);
+      console.log(`✓ OTP sent to ${phone}: ${otp}`);
+    } catch (smsError) {
+      console.error(`✗ Failed to send SMS to ${phone}:`, smsError.message);
+      // Still return success - OTP is saved in DB
+      // In production, you might want to fail here
+    }
 
     res.json({
       success: true,
-      message: 'OTP sent successfully',
-      // REMOVE IN PRODUCTION - only for testing
+      message: 'OTP sent successfully to your phone',
+      // Remove this in production - only for testing
       otp: process.env.NODE_ENV === 'development' ? otp : undefined
     });
   } catch (error) {
@@ -251,6 +261,37 @@ const sendOTP = async (req, res) => {
       message: 'Server error, please try again' 
     });
   }
+};
+
+// Helper function to send SMS OTP
+const sendSMSOTP = async (phone, otp) => {
+  // MOCK: Console logging (replace with real SMS service)
+  const message = `Your RideMate OTP is: ${otp}. Valid for 10 minutes.`;
+  
+  // Log to console (visible in server logs)
+  console.log(`
+╔════════════════════════════════════════╗
+║          📱 SMS OTP SENT              ║
+╠════════════════════════════════════════╣
+║ To:      +91${phone.slice(-10)}
+║ Message: ${message}
+╚════════════════════════════════════════╝
+  `);
+
+  // TODO: Integrate real SMS provider here
+  // Example with Twilio (uncomment and configure):
+  /*
+  const twilio = require('twilio');
+  const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  
+  await client.messages.create({
+    body: message,
+    from: process.env.TWILIO_PHONE_NUMBER,
+    to: `+91${phone}`
+  });
+  */
+
+  return Promise.resolve();
 };
 
 // @desc    Verify OTP & login

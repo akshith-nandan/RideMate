@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import { User, Phone, Mail, Bike, Car, Zap, CheckCircle, ShieldAlert, Award, Sparkles } from 'lucide-react';
+import { User, Phone, Mail, Bike, Car, Zap, CheckCircle, ShieldAlert, Award, Sparkles, Shield, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 const ProfilePage = () => {
   const { user, vehicle, refreshUser } = useAuth();
   const isDriver = user?.role === 'driver';
@@ -128,6 +129,29 @@ const ProfilePage = () => {
           </div>
         )}
       </div>
+
+      {/* Verification Status Card */}
+      <div className="bg-gradient-to-r from-brand-indigo/20 to-brand-yellow/5 border border-brand-indigo/30 rounded-3xl p-6 mb-8 shadow-lg">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center space-x-4">
+            <div className="bg-brand-indigo/20 p-3 rounded-xl border border-brand-indigo/30">
+              <Shield className="h-6 w-6 text-brand-indigo" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">Complete Identity Verification</h3>
+              <p className="text-sm text-slate-400 mt-1">Upload your documents to unlock full platform access and build trust in the RideMate community</p>
+            </div>
+          </div>
+          <Link 
+            to="/verification"
+            className="flex items-center space-x-2 px-4 py-2 bg-brand-yellow text-brand-dark font-semibold rounded-lg hover:bg-yellow-400 transition-all whitespace-nowrap"
+          >
+            <span>Go to Verification</span>
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         
         {/* Left Side: Profile Editing */}
