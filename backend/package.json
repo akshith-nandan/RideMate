@@ -12,12 +12,16 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "axios": "^1.7.7",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-fileupload": "^1.5.1",
+    "google-auth-library": "^9.14.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.3",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "twilio": "^4.10.0"
   }
 }
