@@ -106,15 +106,27 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
-        <div className="bg-slate-900 border border-slate-850 px-6 py-4 rounded-2xl flex items-center space-x-4 shadow-lg shrink-0">
-          <div className="bg-amber-500/10 p-2.5 rounded-xl text-amber-400">
-            <Award className="h-6 w-6" />
+        {user?.rating !== null && user?.rating !== undefined ? (
+          <div className="bg-slate-900 border border-slate-850 px-6 py-4 rounded-2xl flex items-center space-x-4 shadow-lg shrink-0">
+            <div className="bg-amber-500/10 p-2.5 rounded-xl text-amber-400">
+              <Award className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider leading-none mb-1">User Rating</span>
+              <span className="text-lg font-black text-white">{user?.rating?.toFixed(1)} ★</span>
+            </div>
           </div>
-          <div>
-            <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider leading-none mb-1">User Rating</span>
-            <span className="text-lg font-black text-white">{user?.rating?.toFixed(1) || '5.0'} ★</span>
+        ) : (
+          <div className="bg-slate-900 border border-slate-850 px-6 py-4 rounded-2xl flex items-center space-x-4 shadow-lg shrink-0">
+            <div className="bg-slate-700/10 p-2.5 rounded-xl text-slate-500">
+              <Award className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider leading-none mb-1">User Rating</span>
+              <span className="text-lg font-black text-slate-400">No ratings yet</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         
@@ -248,8 +260,8 @@ const ProfilePage = () => {
                   {/* Vehicle Type Selection */}
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vehicle Type</label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {['bike', 'auto', 'car'].map(t => (
+                    <div className="grid grid-cols-2 gap-3">
+                      {['bike', 'car'].map(t => (
                         <button
                           key={t}
                           type="button"
@@ -257,7 +269,6 @@ const ProfilePage = () => {
                             setVehicleType(t);
                             // Auto populate sensible default capacities
                             if (t === 'bike') setVehicleCapacity('1');
-                            else if (t === 'auto') setVehicleCapacity('3');
                             else setVehicleCapacity('4');
                           }}
                           className={`py-2 px-3 rounded-xl border text-xs font-bold capitalize flex items-center justify-center space-x-1.5 transition-all ${

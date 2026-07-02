@@ -26,7 +26,7 @@ const LandingPage = () => {
           </h1>
           {/* Subtext */}
           <p className="max-w-2xl mx-auto text-lg text-slate-400 font-medium leading-relaxed mb-10">
-            RideMate connects everyday bike, auto, and car owners with passengers traveling in the same direction. No commercial drivers, just ordinary citizens co-traveling to split costs and ease congestion.
+            RideMate connects everyday bike and car owners with passengers traveling in the same direction. No commercial drivers, just ordinary citizens co-traveling to split costs and ease congestion.
           </p>
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
