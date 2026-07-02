@@ -11,6 +11,7 @@ import RideSearchPage from './pages/RideSearchPage';
 import CreateRidePage from './pages/CreateRidePage';
 import RideDetailsPage from './pages/RideDetailsPage';
 import ProfilePage from './pages/ProfilePage';
+import VerificationPage from './pages/VerificationPage';
 
 function App() {
   return (
@@ -68,6 +69,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/verification"
+                element={
+                  <ProtectedRoute>
+                    <VerificationPage />
                   </ProtectedRoute>
                 }
               />

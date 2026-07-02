@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, LogOut, User as UserIcon, Navigation, ShieldCheck, MapPin } from 'lucide-react';
+import { Menu, X, LogOut, User as UserIcon, Navigation, ShieldCheck, MapPin, CheckCircle } from 'lucide-react';
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -73,6 +73,17 @@ const Navbar = () => {
               >
                 <UserIcon className="h-4 w-4" />
                 <span>Profile</span>
+              </Link>
+              <Link
+                to="/verification"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-1.5 ${
+                  isActive('/verification')
+                    ? 'text-brand-yellow bg-slate-800'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                }`}
+              >
+                <CheckCircle className="h-4 w-4" />
+                <span>Verify</span>
               </Link>
               <div className="h-6 w-px bg-slate-800 mx-2"></div>
               {/* User Identity info */}
@@ -156,6 +167,13 @@ const Navbar = () => {
                   className="block px-3 py-2 rounded-lg text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800"
                 >
                   Profile
+                </Link>
+                <Link
+                  to="/verification"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800"
+                >
+                  Verification
                 </Link>
                 <div className="border-t border-slate-800 my-2 pt-2 px-3 flex items-center space-x-3">
                   <img
