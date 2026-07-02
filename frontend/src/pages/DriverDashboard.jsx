@@ -70,7 +70,7 @@ const DriverDashboard = () => {
           <AlertTriangle className="h-14 w-14 text-brand-yellow mx-auto mb-6" />
           <h2 className="text-2xl font-extrabold text-white mb-3">Vehicle Details Required</h2>
           <p className="text-slate-400 text-sm max-w-md mx-auto leading-relaxed mb-8">
-            Before you can share seats, create rides, and view earnings, you must register your vehicle details (Bike, Auto, or Car) in your profile.
+            Before you can share seats, create rides, and view earnings, you must register your vehicle details (Bike or Car) in your profile.
           </p>
           <Link
             to="/profile"
