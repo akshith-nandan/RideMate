@@ -6,6 +6,8 @@ const rideRoutes = require('./routes/rideRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const userRoutes = require('./routes/userRoutes');
 const verificationRoutes = require('./routes/verificationRoutes');
+const otpRoutes = require('./routes/otpRoutes');
+
 const app = express();
 
 // Middleware
@@ -15,6 +17,7 @@ app.use(fileUpload({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
   useTempFiles: false
 }));
+
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
@@ -31,6 +34,7 @@ app.use('/api/ride', rideRoutes);
 app.use('/api/booking', bookingRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/verification', verificationRoutes);
+app.use('/api/otp',otpRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {
