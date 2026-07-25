@@ -3,6 +3,19 @@ const axios = require('axios');
 const User = require('../models/User');
 const RefreshToken = require('../models/RefreshToken');
 const OTP = require('../models/OTP');
+const twilioClient = require('../config/twilio');
+
+const normalizeIndianPhone = (phone) => {
+  const digits = String(phone || '').replace(/\D/g, '');
+
+  if (/^[6-9]\d{9}$/.test(digits)) return `+91${digits}`;
+  if (/^91[6-9]\d{9}$/.test(digits)) return `+${digits}`;
+
+  return null;
+};
+
+const isDevelopmentOtpBypassEnabled = () =>
+  process.env.NODE_ENV !== 'production' && process.env.OTP_DEV_BYPASS !== 'false';
 
 // Generate Access Token (15 minutes)
 const generateAccessToken = (id) => {
@@ -46,7 +59,17 @@ const formatUserResponse = (user) => ({
 // @access  Public
 const signup = async (req, res) => {
   try {
-    const { name, email, phone, password, role } = req.body;
+    let { name, email, phone, password, role } = req.body;
+
+    if (phone) {
+      phone = normalizeIndianPhone(phone);
+      if (!phone) {
+        return res.status(400).json({
+          success: false,
+          message: "Enter a valid 10-digit Indian mobile number",
+        });
+      }
+    }
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -228,43 +251,36 @@ const refreshAccessToken = async (req, res) => {
 const sendOTP = async (req, res) => {
   try {
     const { phone } = req.body;
+    const formattedPhone = normalizeIndianPhone(phone);
 
-    if (!phone) {
+    if (!formattedPhone) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Phone number is required' 
+        message: 'Enter a valid 10-digit Indian mobile number'
       });
     }
 
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Delete any existing OTP for this phone
-    await OTP.deleteMany({ phone });
-
-    // Save new OTP to database
-    await OTP.create({
-      phone,
-      otp,
-      attempts: 0
-    });
-
-    // Send OTP via SMS (using mock/console for now)
-    // In production, replace this with Twilio or another SMS provider
     try {
-      await sendSMSOTP(phone, otp);
-      console.log(`✓ OTP sent to ${phone}: ${otp}`);
-    } catch (smsError) {
-      console.error(`✗ Failed to send SMS to ${phone}:`, smsError.message);
-      // Still return success - OTP is saved in DB
-      // In production, you might want to fail here
+      await twilioClient.verify.v2
+        .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+        .verifications.create({ to: formattedPhone, channel: 'sms' });
+    } catch (twilioError) {
+      if (!isDevelopmentOtpBypassEnabled()) throw twilioError;
+
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      await OTP.deleteMany({ phone: formattedPhone });
+      await OTP.create({ phone: formattedPhone, otp });
+
+      console.warn(`\n[RideMate development OTP]\nPhone: ${formattedPhone}\nOTP: ${otp}\nNo SMS was sent.\n`);
+      return res.json({
+        success: true,
+        message: 'Development OTP generated. Check the backend terminal.',
+      });
     }
 
     res.json({
       success: true,
-      message: 'OTP sent successfully to your phone',
-      // Remove this in production - only for testing
-      otp: process.env.NODE_ENV === 'development' ? otp : undefined
+      message: 'OTP sent successfully to your phone'
     });
   } catch (error) {
     console.error('Send OTP Error:', error.message);
@@ -311,31 +327,48 @@ const sendSMSOTP = async (phone, otp) => {
 // @access  Public
 const verifyOTP = async (req, res) => {
   try {
-    const { phone, otp, name, role } = req.body;
+    let { phone, otp, name, role } = req.body;
+    phone = normalizeIndianPhone(phone);
 
     if (!phone || !otp) {
       return res.status(400).json({
         success: false,
-        message: "Phone and OTP are required",
+        message: "A valid phone number and OTP are required",
       });
     }
 
-    const otpRecord = await OTP.findOne({
-      phone,
-      otp,
-      verified: false,
-      expiresAt: { $gt: new Date() },
-    });
+    let approved = false;
 
-    if (!otpRecord) {
+    try {
+      const verification = await twilioClient.verify.v2
+        .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+        .verificationChecks.create({ to: phone, code: otp });
+      approved = verification.status === 'approved';
+    } catch (twilioError) {
+      if (!isDevelopmentOtpBypassEnabled()) throw twilioError;
+    }
+
+    if (!approved && isDevelopmentOtpBypassEnabled()) {
+      const otpRecord = await OTP.findOne({
+        phone,
+        otp,
+        verified: false,
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (otpRecord) {
+        otpRecord.verified = true;
+        await otpRecord.save();
+        approved = true;
+      }
+    }
+
+    if (!approved) {
       return res.status(401).json({
         success: false,
         message: "Invalid or expired OTP",
       });
     }
-
-    otpRecord.verified = true;
-    await otpRecord.save();
 
     let user = await User.findOne({ phone });
 
@@ -367,7 +400,7 @@ const verifyOTP = async (req, res) => {
       user: formatUserResponse(user),
     });
   } catch (error) {
-    console.error("Verify OTP Error:", error);
+    console.error("Twilio verify OTP error:", error.message);
 
     res.status(500).json({
       success: false,

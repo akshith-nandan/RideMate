@@ -1,16 +1,19 @@
-const twilio = require("twilio");
+const twilioClient = require("../config/twilio");
 
-const client = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-);
+const sendOTP = async (phone) => {
+  try {
+    const verification = await twilioClient.verify.v2
+      .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+      .verifications.create({
+        to: phone,
+        channel: "sms",
+      });
 
-const sendOTP = async (phone, otp) => {
-    await client.messages.create({
-        body: `Your RideMate OTP is ${otp}`,
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to: phone
-    });
+    return verification.status;
+  } catch (error) {
+    console.error("Twilio OTP Error:", error);
+    throw error;
+  }
 };
 
 module.exports = sendOTP;
