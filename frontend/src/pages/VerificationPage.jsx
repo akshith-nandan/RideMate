@@ -309,13 +309,15 @@ const VerificationPage = () => {
         </div>
 
         {/* Driving License */}
+        {user?.role === "driver" && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-4">
             <Award className="h-6 w-6 text-brand-yellow" />
             <h3 className="text-lg font-bold text-white">Driving License</h3>
           </div>
 
-          {verification.drivingLicense?.status && (
+          
+            {verification.drivingLicense?.status && (
             <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border mb-4 ${getStatusColor(verification.drivingLicense.status)}`}>
               {getStatusIcon(verification.drivingLicense.status)}
               <span className="text-sm font-semibold capitalize">{verification.drivingLicense.status}</span>
@@ -352,14 +354,16 @@ const VerificationPage = () => {
             </button>
           </div>
         </div>
-
+        )}
         {/* Vehicle Registration */}
+        {user?.role === "driver" && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-4">
             <Car className="h-6 w-6 text-brand-yellow" />
             <h3 className="text-lg font-bold text-white">Vehicle Registration</h3>
           </div>
 
+          
           {verification.vehicleRegistration?.status && (
             <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border mb-4 ${getStatusColor(verification.vehicleRegistration.status)}`}>
               {getStatusIcon(verification.vehicleRegistration.status)}
@@ -391,8 +395,8 @@ const VerificationPage = () => {
             </button>
           </div>
         </div>
+        )}
       </div>
-
       {/* Info Box */}
       <div className="bg-brand-indigo/5 border border-brand-indigo/15 rounded-2xl p-6 mt-8">
         <h3 className="text-lg font-bold text-white mb-3">Why Verification?</h3>

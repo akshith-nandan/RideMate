@@ -107,27 +107,37 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
-        {user?.rating !== null && user?.rating !== undefined ? (
-          <div className="bg-slate-900 border border-slate-850 px-6 py-4 rounded-2xl flex items-center space-x-4 shadow-lg shrink-0">
-            <div className="bg-amber-500/10 p-2.5 rounded-xl text-amber-400">
-              <Award className="h-6 w-6" />
+        {user?.role === "driver" && (
+          user?.rating !== null && user?.rating !== undefined ? (
+            <div className="bg-slate-900 border border-slate-850 px-6 py-4 rounded-2xl flex items-center space-x-4 shadow-lg shrink-0">
+              <div className="bg-amber-500/10 p-2.5 rounded-xl text-amber-400">
+                <Award className="h-6 w-6" />
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider leading-none mb-1">
+                  Driver Rating
+                </span>
+                <span className="text-lg font-black text-white">
+                  {user.rating.toFixed(1)} ★
+                </span>
+              </div>
             </div>
-            <div>
-              <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider leading-none mb-1">User Rating</span>
-              <span className="text-lg font-black text-white">{user?.rating?.toFixed(1)} ★</span>
+          ) : (
+            <div className="bg-slate-900 border border-slate-850 px-6 py-4 rounded-2xl flex items-center space-x-4 shadow-lg shrink-0">
+              <div className="bg-slate-700/10 p-2.5 rounded-xl text-slate-500">
+                <Award className="h-6 w-6" />
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider leading-none mb-1">
+                  Driver Rating
+                </span>
+                <span className="text-lg font-black text-slate-400">
+                  No ratings yet
+                </span>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="bg-slate-900 border border-slate-850 px-6 py-4 rounded-2xl flex items-center space-x-4 shadow-lg shrink-0">
-            <div className="bg-slate-700/10 p-2.5 rounded-xl text-slate-500">
-              <Award className="h-6 w-6" />
-            </div>
-            <div>
-              <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider leading-none mb-1">User Rating</span>
-              <span className="text-lg font-black text-slate-400">No ratings yet</span>
-            </div>
-          </div>
-        )}
+            )
+            )}
       </div>
 
       {/* Verification Status Card */}

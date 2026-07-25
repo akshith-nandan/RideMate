@@ -49,59 +49,71 @@ const signup = async (req, res) => {
     const { name, email, phone, password, role } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Please provide name, email, and password' 
+      return res.status(400).json({
+        success: false,
+        message: "Please provide name, email and password",
       });
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Password must be at least 6 characters' 
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
       });
     }
 
-    // Check if user exists
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'User already exists with this email' 
+    // Check if another user already uses this email
+    const emailUser = await User.findOne({ email });
+
+    if (emailUser && emailUser.phone !== phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already registered",
       });
     }
 
-    // Create user
-    const user = await User.create({
-      name,
-      email,
-      phone: phone || '',
-      password,
-      role: role || 'passenger',
-      authMethods: ['email']
-    });
+    // Check if phone user already exists
+    let user = await User.findOne({ phone });
 
     if (user) {
-      const accessToken = generateAccessToken(user._id);
-      const refreshToken = await generateRefreshToken(user._id);
+      // Link email account with existing phone account
+      user.name = name;
+      user.email = email;
+      user.password = password;
+      user.role = role || user.role;
 
-      res.status(201).json({
-        success: true,
-        accessToken,
-        refreshToken,
-        user: formatUserResponse(user)
-      });
+      if (!user.authMethods.includes("email")) {
+        user.authMethods.push("email");
+      }
+
+      await user.save();
     } else {
-      res.status(400).json({ 
-        success: false, 
-        message: 'Invalid user data' 
+      // Create completely new user
+      user = await User.create({
+        name,
+        email,
+        phone,
+        password,
+        role: role || "passenger",
+        authMethods: ["email"],
       });
     }
+
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = await generateRefreshToken(user._id);
+
+    res.status(201).json({
+      success: true,
+      accessToken,
+      refreshToken,
+      user: formatUserResponse(user),
+    });
   } catch (error) {
-    console.error('Signup Error:', error.message);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error, please try again' 
+    console.error("Signup Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
 };
@@ -302,69 +314,46 @@ const verifyOTP = async (req, res) => {
     const { phone, otp, name, role } = req.body;
 
     if (!phone || !otp) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Phone and OTP are required' 
+      return res.status(400).json({
+        success: false,
+        message: "Phone and OTP are required",
       });
     }
 
-    // Find valid OTP
     const otpRecord = await OTP.findOne({
       phone,
       otp,
+      verified: false,
       expiresAt: { $gt: new Date() },
-      verified: false
     });
 
     if (!otpRecord) {
-      // Increment attempts
-      await OTP.updateOne(
-        { phone, otp },
-        { $inc: { attempts: 1 } }
-      );
-
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid or expired OTP' 
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired OTP",
       });
     }
 
-    // Check max attempts (5)
-    if (otpRecord.attempts >= 5) {
-      await OTP.deleteOne({ _id: otpRecord._id });
-      return res.status(429).json({ 
-        success: false, 
-        message: 'Too many attempts. Please request a new OTP' 
-      });
-    }
-
-    // Mark OTP as verified
     otpRecord.verified = true;
     await otpRecord.save();
 
-    // Find or create user
     let user = await User.findOne({ phone });
 
     if (!user) {
-      if (!name) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Name is required for new users' 
-        });
-      }
-
       user = await User.create({
         name,
         phone,
-        role: role || 'passenger',
+        role: role || "passenger",
         phoneVerified: true,
-        authMethods: ['phone']
+        authMethods: ["phone"],
       });
     } else {
       user.phoneVerified = true;
-      if (!user.authMethods.includes('phone')) {
-        user.authMethods.push('phone');
+
+      if (!user.authMethods.includes("phone")) {
+        user.authMethods.push("phone");
       }
+
       await user.save();
     }
 
@@ -375,13 +364,14 @@ const verifyOTP = async (req, res) => {
       success: true,
       accessToken,
       refreshToken,
-      user: formatUserResponse(user)
+      user: formatUserResponse(user),
     });
   } catch (error) {
-    console.error('Verify OTP Error:', error.message);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error, please try again' 
+    console.error("Verify OTP Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
 };
