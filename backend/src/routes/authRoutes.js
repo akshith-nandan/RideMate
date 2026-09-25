@@ -7,7 +7,9 @@ const {
   sendOTP,
   verifyOTP,
   googleAuth,
-  logout
+  logout,
+  requestPasswordReset,
+  resetPassword
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 
@@ -22,7 +24,8 @@ router.post('/refresh', refreshAccessToken);
 // OTP authentication
 router.post('/send-otp', sendOTP);
 router.post('/verify-otp', verifyOTP);
-
+router.post('/forgot-password', requestPasswordReset);
+router.post('/reset-password', resetPassword);
 // Google OAuth
 router.post('/google', googleAuth);
 

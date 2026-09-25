@@ -12,6 +12,7 @@ import CreateRidePage from './pages/CreateRidePage';
 import RideDetailsPage from './pages/RideDetailsPage';
 import ProfilePage from './pages/ProfilePage';
 import VerificationPage from './pages/VerificationPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route
                 path="/passenger-dashboard"
                 element={

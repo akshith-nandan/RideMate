@@ -161,7 +161,7 @@ const LoginPage = () => {
                   <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="form-checkbox h-4 w-4 text-brand-yellow bg-slate-800 rounded" />
                   <span className="ml-2">Remember me</span>
                 </label>
-                <a href="/forgot-password" className="text-brand-yellow font-medium hover:underline">Forgot?</a>
+                <Link to="/forgot-password" className="text-brand-yellow font-medium hover:underline">Forgot password?</Link>
               </div>
 
               <button

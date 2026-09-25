@@ -116,6 +116,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const ForgetPassword = async (phone) => {
+    setLoading(true);
+    setAuthError(null);
+    try {
+      const data = await api.sendOTP(phone);
+      if (data.success) {
+        return { success: true, otp: data.otp }; // otp only in dev
+      } else {
+        setAuthError(data.message || 'Failed to send OTP');
+        return { success: false, message: data.message };
+      }
+    } catch (err) {
+      const errMsg = 'Failed to send OTP';
+      setAuthError(errMsg);
+      return { success: false, message: errMsg };
+    } finally {
+      setLoading(false);
+    }
+  };
   // OTP Login
   const sendOTP = async (phone) => {
     setAuthError(null);
@@ -245,6 +264,7 @@ export const AuthProvider = ({ children }) => {
     login,
     signup,
     logout,
+    ForgetPassword,
     sendOTP,
     verifyOTP,
     googleLogin,

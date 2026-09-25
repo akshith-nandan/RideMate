@@ -1,3 +1,4 @@
+import axios from 'axios';
 const API_URL = 'http://localhost:5000/api';
 
 // Create helper to get headers with token
@@ -33,6 +34,24 @@ const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, phone, password, role })
+    });
+    return await res.json();
+  },
+
+  forgotPassword: async (phone) => {
+    const res = await fetch(`${API_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+    return await res.json();
+  },
+
+  resetPassword: async (phone, otp, password) => {
+    const res = await fetch(`${API_URL}/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, otp, password })
     });
     return await res.json();
   },

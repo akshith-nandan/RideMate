@@ -245,6 +245,103 @@ const refreshAccessToken = async (req, res) => {
   }
 };
 
+const requestPasswordReset = async (req, res) => {
+  try {
+    const { phone } = req.body;
+    const formattedPhone = normalizeIndianPhone(phone);
+
+    if (!formattedPhone) {
+      return res.status(400).json({
+        success: false,
+        message: 'Enter a valid 10-digit Indian mobile number'
+      });
+    }
+
+    const user = await User.findOne({phone: formattedPhone});
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User with this phone number does not exist'
+      });
+    }
+
+    try {
+      await twilioClient.verify.v2
+        .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+        .verifications.create({ to: formattedPhone, channel: 'sms' });
+    } catch (twilioError) {
+      if (!isDevelopmentOtpBypassEnabled()) throw twilioError;
+
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      await OTP.deleteMany({ phone: formattedPhone });
+      await OTP.create({ phone: formattedPhone, otp });
+      console.warn(`Password-reset OTP for ${formattedPhone}: ${otp}`);
+    }
+
+    res.json({ success: true, message: 'A verification code has been sent to your phone' });
+  } catch (error) {
+    console.error('Forget Password Error:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Server error, please try again'
+    });
+  }
+};
+
+// @desc    Verify a password-reset OTP and set a new password
+// @route   POST /api/auth/reset-password
+// @access  Public
+const resetPassword = async (req, res) => {
+  try {
+    let { phone, otp, password } = req.body;
+    phone = normalizeIndianPhone(phone);
+
+    if (!phone || !otp || !password) {
+      return res.status(400).json({ success: false, message: 'Phone number, verification code and new password are required' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+    }
+
+    const user = await User.findOne({ phone }).select('+password');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User with this phone number does not exist' });
+    }
+
+    let approved = false;
+    try {
+      const verification = await twilioClient.verify.v2
+        .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+        .verificationChecks.create({ to: phone, code: otp });
+      approved = verification.status === 'approved';
+    } catch (twilioError) {
+      if (!isDevelopmentOtpBypassEnabled()) throw twilioError;
+    }
+
+    if (!approved && isDevelopmentOtpBypassEnabled()) {
+      const otpRecord = await OTP.findOne({ phone, otp, verified: false, expiresAt: { $gt: new Date() } });
+      if (otpRecord) {
+        otpRecord.verified = true;
+        await otpRecord.save();
+        approved = true;
+      }
+    }
+
+    if (!approved) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired verification code' });
+    }
+
+    user.password = password;
+    if (!user.authMethods.includes('email')) user.authMethods.push('email');
+    await user.save();
+    await RefreshToken.updateMany({ user: user._id, isRevoked: false }, { isRevoked: true });
+
+    res.json({ success: true, message: 'Password reset successfully. Please sign in.' });
+  } catch (error) {
+    console.error('Reset Password Error:', error.message);
+    res.status(500).json({ success: false, message: 'Server error, please try again' });
+  }
+};
 // @desc    Send OTP to phone
 // @route   POST /api/auth/send-otp
 // @access  Public
@@ -512,6 +609,8 @@ const logout = async (req, res) => {
 module.exports = {
   signup,
   login,
+  requestPasswordReset,
+  resetPassword,
   refreshAccessToken,
   sendOTP,
   verifyOTP,
